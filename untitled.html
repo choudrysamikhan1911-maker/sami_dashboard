@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Sami | Instagram Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:#fafafa;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+}
+
+/* ===== LOGIN / SIGNUP ===== */
+.box{
+  width:360px;
+  padding:35px;
+  border-radius:20px;
+  background:linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);
+  color:white;
+  box-shadow:0 15px 40px rgba(0,0,0,.3);
+  text-align:center;
+}
+.box h2{margin-bottom:25px;letter-spacing:2px;}
+
+.input{
+  position:relative;
+  margin-bottom:18px;
+}
+.input input{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:8px;
+  font-size:16px;
+}
+.input label{
+  position:absolute;
+  left:12px;
+  top:12px;
+  font-size:14px;
+  pointer-events:none;
+  transition:.3s;
+}
+.input input:focus+label,
+.input input:valid+label{
+  top:-10px;
+  font-size:12px;
+}
+
+button{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:8px;
+  background:#bc1888;
+  color:white;
+  font-size:16px;
+  cursor:pointer;
+}
+button:hover{background:#cc2366;}
+
+.link{
+  margin-top:12px;
+  cursor:pointer;
+  text-decoration:underline;
+}
+
+#msg{margin-top:10px;color:#ffeaea}
+
+/* ===== DASHBOARD ===== */
+#dashboard{
+  display:none;
+  width:95%;
+  max-width:1000px;
+  padding:35px;
+  border-radius:20px;
+  background:linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);
+  color:white;
+}
+
+.profile{
+  width:120px;
+  height:120px;
+  border-radius:50%;
+  background:#bc1888;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-size:34px;
+  font-weight:bold;
+  margin:0 auto 20px;
+}
+
+.cards{
+  display:flex;
+  gap:20px;
+  flex-wrap:wrap;
+  justify-content:center;
+}
+
+.card{
+  background:white;
+  color:black;
+  width:260px;
+  padding:20px;
+  border-radius:15px;
+  box-shadow:0 10px 25px rgba(0,0,0,.2);
+}
+.card h3{color:#bc1888}
+
+/* ===== CALCULATOR ===== */
+#calc{display:none}
+#calc input{
+  width:60px;
+  padding:8px;
+  margin:5px;
+}
+#calc button{
+  width:45px;
+  margin:5px;
+}
+#result{font-weight:bold;margin-top:10px}
+
+.social a{
+  display:inline-block;
+  margin:5px;
+  padding:6px 12px;
+  background:#bc1888;
+  color:white;
+  border-radius:5px;
+  text-decoration:none;
+}
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<div class="box" id="loginBox">
+<h2>LOGIN</h2>
+<div class="input"><input id="luser" required><label>Username</label></div>
+<div class="input"><input id="lpass" type="password" required><label>Password</label></div>
+<button onclick="login()">Login</button>
+<div class="link" onclick="showSignup()">Create Account</div>
+<p id="msg"></p>
+</div>
+
+<!-- SIGNUP -->
+<div class="box" id="signupBox" style="display:none">
+<h2>SIGN UP</h2>
+<div class="input"><input id="suser" required><label>Username</label></div>
+<div class="input"><input id="spass" type="password" required><label>Password</label></div>
+<button onclick="signup()">Signup</button>
+<div class="link" onclick="showLogin()">Back to Login</div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+<div class="profile">SAMI</div>
+<h2>Welcome, <span id="cu"></span></h2>
+
+<div class="cards">
+<div class="card">
+<h3>About Me</h3>
+<p>My first professional Instagram themed dashboard.</p>
+</div>
+
+<div class="card">
+<h3>Calculator</h3>
+<button onclick="toggleCalc()">View Project</button>
+<div id="calc">
+<input id="n1"><input id="n2"><br>
+<button onclick="cal('+')">+</button>
+<button onclick="cal('-')">-</button>
+<button onclick="cal('*')">*</button>
+<button onclick="cal('/')">/</button>
+<p id="result"></p>
+</div>
+</div>
+
+<div class="card">
+<h3>Contact</h3>
+<div class="social">
+<a href="https://instagram.com/choudrysami.1" target="_blank">Instagram</a>
+<a href="https://facebook.com/choudrysami.1" target="_blank">Facebook</a>
+<a href="https://tiktok.com/@choudrysami.1" target="_blank">TikTok</a>
+</div>
+</div>
+</div>
+
+<br>
+<button onclick="logout()">Logout</button>
+</div>
+
+<script>
+let users = JSON.parse(localStorage.getItem("users")) || [];
+
+function signup(){
+  let u=suser.value.trim();
+  let p=spass.value;
+  if(p!=="allahisone"){alert("Password must be allahisone");return;}
+  users.push({u,p});
+  localStorage.setItem("users",JSON.stringify(users));
+  alert("Signup successful");
+  showLogin();
+}
+
+function login(){
+  let u=luser.value.trim();
+  let p=lpass.value;
+  let ok=users.find(x=>x.u===u&&x.p===p);
+  if(ok){
+    localStorage.setItem("current",u);
+    showDash();
+  }else msg.innerText="Wrong login!";
+}
+
+function showDash(){
+  loginBox.style.display="none";
+  signupBox.style.display="none";
+  dashboard.style.display="block";
+  cu.innerText=localStorage.getItem("current");
+}
+function logout(){
+  localStorage.removeItem("current");
+  location.reload();
+}
+function showSignup(){loginBox.style.display="none";signupBox.style.display="block";}
+function showLogin(){signupBox.style.display="none";loginBox.style.display="block";}
+window.onload=()=>{if(localStorage.getItem("current"))showDash();}
+function toggleCalc(){calc.style.display=calc.style.display=="none"?"block":"none";}
+function cal(op){
+  let a=+n1.value,b=+n2.value;
+  result.innerText="Result: "+eval(a+op+b);
+}
+</script>
+
+</body>
+</html>
